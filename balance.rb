@@ -20,22 +20,24 @@ end
 
 filters = {
   eat:          /SUSHI|ITSU/,
-  breakfast:    /TESCO/,
-  breakfast_we: /LE PAIN QUOTIDIEN|STARBUCKS|PAUL UK/,
-  lunch:        /POD|MIZUNA|WRAP IT UP/,
+  # breakfast:    //,
+  breakfast_we: /LE PAIN QUOTIDIEN|PAUL UK|BONNE BOUCHE/,
+  cafe:         /COSTA COFFEE|STARBUCKS|CAFFE NERO/,
+  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|MAMUSKA|ICCO LONDON/,
+  break_or_lunch: /PRET A MANGER/,
   clothes:      /H&M|GAP 2744/,
   cash:         /CASH/,
-  murka:        /KRISTINA BUTKUTE/,
-  supermarket:  /MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP/,
-  restaurant:   /COCORO/,
+  kri:          /KRISTINA BUTKUTE/,
+  supermarket:  /TESCO|MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP|CILWORTH FD&WINE/,
+  restaurant:   /COCORO|TOA KITCHEN/,
   other:        /RYMAN|BOOTS/,
   tech:         /APPLE STORE/,
-  metro:        /TICKET MACHINE/,
+  metro:        /TICKET MACHINE|TL RAILWAY/,
   taxi:         /Uber BV/,
-  pub:          /Foxcroft \& Gin|THE TIN SHED/,
+  pub:          /Foxcroft \& Gin|THE TIN SHED|CARPENTERS ARMS|FITZROVIA BLOOMSBURY/,
   income:       /QUILL/,
   # aggregates
-  food:         %i(eat breakfast supermarket restaurant),
+  food:         %i(eat breakfast restaurant cafe break_or_lunch lunch),
 }
 
 categories = filters.map do |name, matcher|
@@ -75,7 +77,7 @@ puts "-"*80
 categories.each do |category|
   puts category.name.capitalize
   puts category.amount.round
-  # puts out  
+  # puts out
   puts "-"*80
 end
 
