@@ -3,7 +3,14 @@ require 'csv'
 require 'bundler/setup'
 Bundler.require :default
 
-rows = CSV.read "db/statement.csv"
+rows = []
+
+csvs = Dir.glob "db/*.csv"
+
+for csv in csvs
+  rows += CSV.read(csv)
+end
+
 
 columns = %w(date name amount)
 
@@ -23,21 +30,21 @@ filters = {
   # breakfast:    //,
   breakfast_we: /LE PAIN QUOTIDIEN|PAUL UK|BONNE BOUCHE/,
   cafe:         /COSTA COFFEE|STARBUCKS|CAFFE NERO/,
-  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|MAMUSKA|ICCO LONDON/,
-  break_or_lunch: /PRET A MANGER/,
+  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|ICCO LONDON|PRET A MANGER|WAHACA/,
+  restaurant:   /COCORO|TOA KITCHEN|NYONYA|MAMUSKA|ROSSO POMODORO|BRICIOLE/,
   clothes:      /H&M|GAP 2744/,
-  cash:         /CASH/,
+  cash:         /CASH|ET2JDBYW/,
   kri:          /KRISTINA BUTKUTE/,
-  supermarket:  /TESCO|MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP|CILWORTH FD&WINE/,
-  restaurant:   /COCORO|TOA KITCHEN/,
+  supermarket:  /TESCO|MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP|CILWORTH FD&WINE|M&S SIMPLY FOOD/,
+
   other:        /RYMAN|BOOTS/,
   tech:         /APPLE STORE/,
   metro:        /TICKET MACHINE|TL RAILWAY/,
   taxi:         /Uber BV/,
-  pub:          /Foxcroft \& Gin|THE TIN SHED|CARPENTERS ARMS|FITZROVIA BLOOMSBURY/,
+  pub:          /Foxcroft \& Gin|THE TIN SHED|CARPENTERS ARMS|FITZROVIA BLOOMSBURY|DUKE OF WELLINGTON|THE CROWN LONDON/,
   income:       /QUILL/,
   # aggregates
-  food:         %i(eat breakfast restaurant cafe break_or_lunch lunch),
+  food:         %i(eat breakfast restaurant cafe lunch),
 }
 
 categories = filters.map do |name, matcher|
@@ -45,6 +52,7 @@ categories = filters.map do |name, matcher|
   cat.name    = name
   cat.matcher = matcher
   cat.amount  = 0
+  cat.rows    = []
   # cat.amount_last_month = 0
   # cat.amount_last_week  = 0
   # cat.amount_week_avg   = 0
@@ -64,12 +72,15 @@ end
 remaining = rows
 categories.each do |category|
   sel = rows.select{ |r| r.name =~ category.matcher }
+  category.rows   = sel
   category.amount = sel.map(&:amount).inject(:+)
   remaining = remaining - sel
 end
 
 # sorting
 categories.sort_by!{ |c| c.amount }
+# categories.select!{ |c| c.name == :cash }
+# pp categories
 
 
 # output
