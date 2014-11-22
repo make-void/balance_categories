@@ -11,6 +11,12 @@ for csv in csvs
   rows += CSV.read(csv)
 end
 
+class Fixnum
+  def percent_of(n)
+    self.to_f / n.to_f * 100.0
+  end
+end
+
 
 columns = %w(date name amount)
 
@@ -51,6 +57,7 @@ filters = {
   income:       /QUILL/,
   # aggregates
   food:         %i(eat breakfast restaurant cafe lunch),
+  extra:        %i(pub taxi tech other tickets),
 }
 
 categories = filters.map do |name, matcher|
@@ -59,6 +66,7 @@ categories = filters.map do |name, matcher|
   cat.matcher = matcher
   cat.amount  = 0
   cat.rows    = []
+  cat.matches = []
   # cat.amount_last_month = 0
   # cat.amount_last_week  = 0
   # cat.amount_week_avg   = 0
@@ -66,10 +74,12 @@ categories = filters.map do |name, matcher|
 end
 
 
+
 # expand named filters
 categories.each do |cat|
   next unless cat.matcher.is_a? Array
   regex = categories.select{ |c| cat.matcher.include? c.name }.map{ |c| c.matcher.source }.join "|"
+  cat.matches = cat.matcher
   cat.matcher = /#{regex}/
 end
 
@@ -90,10 +100,17 @@ categories.sort_by!{ |c| c.amount || 0 }
 
 
 # output
+
+INCOME = categories.find{|c| c.name == :income }.amount
+
 puts "-"*80
 categories.each do |category|
-  puts category.name.capitalize
-  puts category.amount.round
+  name        = category.name.capitalize
+  amount      = category.amount.round
+  percentage  = amount.abs.percent_of INCOME
+  info        = "[#{category.matches.join(', ')}]" if category.matches.any?
+  puts "#{name} #{info}"
+  puts "#{amount.abs} (#{percentage.round 1}%)"
   # puts out
   puts "-"*80
 end
