@@ -25,23 +25,29 @@ rows = rows.map do |row|
   )
 end
 
+total = rows.map(&:amount).inject(:+).round
+
 filters = {
   eat:          /SUSHI|ITSU/,
   # breakfast:    //,
   breakfast_we: /LE PAIN QUOTIDIEN|PAUL UK|BONNE BOUCHE/,
   cafe:         /COSTA COFFEE|STARBUCKS|CAFFE NERO/,
-  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|ICCO LONDON|PRET A MANGER|WAHACA/,
-  restaurant:   /COCORO|TOA KITCHEN|NYONYA|MAMUSKA|ROSSO POMODORO|BRICIOLE/,
+  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|ICCO LONDON|PRET A MANGER|WAHACA|JAPANESE CANTEEN/,
+  restaurant:   /COCORO|TOA KITCHEN|NYONYA|MAMUSKA|ROSSO POMODORO|BRICIOLE|TEN TEN TEI/,
   clothes:      /H&M|GAP 2744/,
   cash:         /CASH|ET2JDBYW/,
   kri:          /KRISTINA BUTKUTE/,
   supermarket:  /TESCO|MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP|CILWORTH FD&WINE|M&S SIMPLY FOOD/,
 
+  phone:        /TOP UP BARCL/,
+  transfer_ita: /PAYMENT CHARGE|FRANCESCO CANESSA/,
+  tickets:      /SongkickEU|EVENTIM/,
   other:        /RYMAN|BOOTS/,
-  tech:         /APPLE STORE/,
+  tech:         /APPLE STORE|MAPLIN/,
   metro:        /TICKET MACHINE|TL RAILWAY/,
-  taxi:         /Uber BV/,
-  pub:          /Foxcroft \& Gin|THE TIN SHED|CARPENTERS ARMS|FITZROVIA BLOOMSBURY|DUKE OF WELLINGTON|THE CROWN LONDON/,
+  taxi:         /Uber BV|UBER\.COM/,
+  pub:          /Foxcroft \& Gin|THE TIN SHED|CARPENTERS ARMS|FITZROVIA BLOOMSBURY|DUKE OF WELLINGTON|THE CROWN LONDON|THE SLAUGHTERED|PRINCE ALFRED|MELTON MOWBRAY/,
+  server:       /PAYPAL \*OVH/,
   income:       /QUILL/,
   # aggregates
   food:         %i(eat breakfast restaurant cafe lunch),
@@ -73,12 +79,12 @@ remaining = rows
 categories.each do |category|
   sel = rows.select{ |r| r.name =~ category.matcher }
   category.rows   = sel
-  category.amount = sel.map(&:amount).inject(:+)
+  category.amount = sel.map(&:amount).inject(:+) || 0
   remaining = remaining - sel
 end
 
 # sorting
-categories.sort_by!{ |c| c.amount }
+categories.sort_by!{ |c| c.amount || 0 }
 # categories.select!{ |c| c.name == :cash }
 # pp categories
 
@@ -92,14 +98,30 @@ categories.each do |category|
   puts "-"*80
 end
 
+
+
 if remaining.any?
   puts "uncategorized:"
   pp remaining
 end
 
+require 'pp'
+require 'yaml'
+def p(text="")
+  if text.is_a?(String)
+    puts text
+  else
+    pp text
+  end
+end
 
 
-
-
+p "Balance"
+p total
+p "-"*80
+p
+p "category: tickets (raw detail)"
+p categories.find{|c| c.name == :tickets }.to_yaml
+p
 
 # pp rows
