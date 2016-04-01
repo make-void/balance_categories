@@ -56,8 +56,9 @@ rows.compact!
 
 rows.reject!{ |row| row.type == :fees }
 rows.reject!{ |row| row.type == :transfer }
-rows.select!{ |row| row.date >= Date.new(2015, 11, 1) }
-# rows.select!{ |row| row.date >= Date.new(2016, 1, 1) }
+# rows.select!{ |row| row.date >= Date.new(2015, 11, 1) }
+# rows.select!{ |row| row.date <= Date.new(2016, 1, 1)  }
+rows.select!{ |row| row.date >= Date.new(2016, 1, 1) }
 
 rows.each do |row|
   if row.name == "************************************"
@@ -78,20 +79,19 @@ total = rows.map(&:amount).inject(:+).round
 filters = {
   eat:          /SUSHI|ITSU/,
   # breakfast:    //,
-  breakfast_we: /LE PAIN QUOTIDIEN|PAUL UK|BONNE BOUCHE|NORDIC BAKERY/,
-  cafe:         /COSTA COFFEE|STARBUCKS|CAFFE NERO|ART CAFE|EQUINOX CAFE|PURE MOORGATE/,
-  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|ICCO LONDON|PRET A MANGER|WAHACA|JAPANESE CANTEEN|GOURMET BURGER|PIZZA EXPRESS|CARLUCCIOS LTD|EAST STREET|EAT\s+CANARY WHARF|KRUGER|BANK OF AMERICA|PHO ST PAUL|\* CANARY WHARF/,
-  restaurant:   /COCORO|TOA KITCHEN|NYONYA|MAMUSKA|ROSSO POMODORO|BRICIOLE|TEN TEN TEI|BURGER&LOBSTER|EFES \* RESTAURANT|PURE CANARY WHARF|LOTUS CHINESE REST|PEPPER SAINT|PAPA JOHN|ALL STAR LANES|LEVEL \*\* LTD|WILDWOOD CANARY WH|CRUSSH JUBILEE|PP\*MAILINDA|BIG CHILL|DAISY GREEN FOOD|WASABI CANARY|BYRON HAMBURGERS|BLUEBIRD RESTAURAN|BIRLEYS SANDWICHES|INDIGO\s+WESTFIELD/,
-  clothes:      /H&M|GAP 2744|GAP \*\*\*\*/,
+  breakfast_we: /LE PAIN QUOTIDIEN|PAUL UK|BONNE BOUCHE|NORDIC BAKERY|OLD SWAN/,
+  cafe:         /COSTA COFFEE|STARBUCKS|CAFFE NERO|ART CAFE|EQUINOX CAFE|PURE MOORGATE|GREGGS S/,
+  lunch:        /POD|MIZUNA|WRAP IT UP|LEON RESTAURANTS|SALENTO GREEN|KANADA-YA|PAPAYA|ICCO LONDON|PRET A MANGER|WAHACA|JAPANESE CANTEEN|GOURMET BURGER|PIZZA EXPRESS|CARLUCCIOS LTD|EAST STREET|EAT\s+CANARY WHARF|KRUGER|BANK OF AMERICA|PHO ST PAUL|\* CANARY WHARF|KAMPS TCR/,
+  restaurant:   /COCORO|TOA KITCHEN|NYONYA|MAMUSKA|ROSSO POMODORO|BRICIOLE|TEN TEN TEI|BURGER&LOBSTER|EFES \* RESTAURANT|PURE CANARY WHARF|LOTUS CHINESE REST|PEPPER SAINT|PAPA JOHN|ALL STAR LANES|LEVEL \*\* LTD|WILDWOOD CANARY WH|CRUSSH JUBILEE|PP\*MAILINDA|BIG CHILL|DAISY GREEN FOOD|WASABI CANARY|BYRON HAMBURGERS|BLUEBIRD RESTAURAN|BIRLEYS SANDWICHES|INDIGO\s+WESTFIELD|KAPPA RESTAURANT|PIZZA PILGRIMS/,
   cash:         /CASH|ET2JDBYW/,
   kri:          /KRISTINA BUTKUTE/,
-  supermarket:  /TESCO STORES|TESCO|MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP|CILWORTH FD&WINE|M&S SIMPLY FOOD|ASDA SUPERSTORE/,
+  supermarket:  /TESCO STORES|TESCO|MARKS & SPEN|WAITROSE|SAINSBURYS|SPAR|CO-OP GROUP|CILWORTH FD&WINE|M&S SIMPLY FOOD|ASDA SUPERSTORE|ALNOOR SUPERMARKET/,
 
   phone:        /TOP UP BARCL|THREE-TOPUP|Skype/,
   transfer_ita: /PAYMENT CHARGE|FRANCESCO CANESSA/,
   rent_and_ita: /\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*/,
   tickets:      /SongkickEU|EVENTIM|TICKETWEB\.CO\.UK/,
-  shopping:     /RYMAN|BOOTS|Amazon UK Marketpl|Amazon UK Retail|ALIEXPRESS|DEBENHAMS|KUSMI TEA|MANGO LONDON|KIKO/,
+  shopping:     /RYMAN|BOOTS|Amazon UK Marketpl|Amazon UK Retail|ALIEXPRESS|DEBENHAMS|KUSMI TEA|MANGO LONDON|KIKO|GEOX RETAIL|H&M|GAP 2744|GAP \*\*\*\*|PRIMARK/,
   other:        /SpotifyUK|PAYPAL \*SPOTIFY|BANDCAMP|POST OFFICE/,
   tech:         /APPLE STORE|MAPLIN|ITUNES\.COM|LAPTOPSDIRECT|RING\s+\*|INDIEGOGO|APPLE ONLINE STORE|CURRYS\s+CANARY WHARF/,
   metro:        /TFL.GOV.UK|TICKET MACHINE|TL RAILWAY|TRAINLINE\.COM/,
@@ -150,7 +150,7 @@ categories.sort_by!{ |c| c.amount || 0 }
 
 # output
 
-TOTAL = 6600# categories.find{|c| c.name == :income }.amount
+TOTAL = total # categories.find{|c| c.name == :income }.amount
 
 puts "-"*80
 categories.each do |category|
@@ -187,7 +187,7 @@ puts total
 p "-"*80
 p
 # p "category: tickets (raw detail)"
-# puts categories.find{|c| c.name == :dunno }.to_yaml
+# puts categories.find{|c| c.name == :rent_and_ita }.to_yaml
 # p
 
 # pp rows
