@@ -182,12 +182,16 @@ def p(text="")
 end
 
 
-p "Balance"
+p "Total"
 puts total
 p "-"*80
 p
 # p "category: tickets (raw detail)"
-# puts categories.find{|c| c.name == :rent_and_ita }.to_yaml
+# puts categories.find{|c| c.name == :restaurant }.to_yaml
+
+
+# rowz = categories.find{|c| c.name == :restaurant }.rows.sort_by{ |c| c.amount }
+# puts rowz.to_yaml
 # p
 
 # pp rows
